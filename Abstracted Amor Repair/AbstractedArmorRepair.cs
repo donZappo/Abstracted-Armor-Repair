@@ -487,6 +487,7 @@ namespace AbstractedArmorRepair
                         {
                             string[] parsedString = tag.Split('_');
                             armorLoss = 1 - float.Parse(parsedString[1]);
+                            armorLoss *= 100;
                         }
                     }
                     var armorLossString = armorLoss.ToString("0.0#") + "% Armor Damaged";
