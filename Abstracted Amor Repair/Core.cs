@@ -6,11 +6,13 @@ using Newtonsoft.Json;
 using static AbstractedArmorRepair.Logger;
 using BattleTech;
 using BattleTech.UI;
+using System.Collections.Generic;
 
 namespace AbstractedArmorRepair
 {
     public static class Core
     {
+       
         #region Init
 
         public static void Init(string modDir, string settings)
@@ -62,5 +64,7 @@ namespace AbstractedArmorRepair
         #endregion
 
         internal static ModSettings Settings;
+        public static List<MechDef> CombatMechs = new List<MechDef>();
+        public static List<WorkOrderEntry_MechLab> tempMechLabQueue = new List<WorkOrderEntry_MechLab>();
     }
 }

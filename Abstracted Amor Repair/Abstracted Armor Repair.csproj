@@ -76,6 +76,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractedArmorRepair.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="ResolveCompletedContract.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Core.cs" />

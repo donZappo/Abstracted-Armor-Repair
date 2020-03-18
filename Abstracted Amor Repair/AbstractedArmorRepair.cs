@@ -38,11 +38,13 @@ namespace AbstractedArmorRepair
                 {
                     unitResult.mech.MechTags.Add("XLRP_R&R");
                     unitResult.mech.MechTags.Add(armorDamageTag);
+                    Core.CombatMechs.Add(unitResult.mech);
                 }
                 else if (armorDamage < 1)
                 {
                     unitResult.mech.MechTags.Where(tag => tag.StartsWith("XLRPArmor")).Do(x => unitResult.mech.MechTags.Remove(x));
                     unitResult.mech.MechTags.Add(armorDamageTag);
+                    Core.CombatMechs.Add(unitResult.mech);
                 }
             }
         }
@@ -561,13 +563,44 @@ namespace AbstractedArmorRepair
             mechLabPanel.baseWorkOrder.AddSubEntry(subEntry);
         }
 
+        public static WorkOrderEntry RepairArmorMechDef(MechDef mechDef)
+        {
+            var sim = UnityGameInstance.BattleTechGame.Simulation;
+            float armorLoss = 1;
+
+            foreach (var tag in mechDef.MechTags)
+            {
+                if (tag.StartsWith($"XLRPArmor"))
+                {
+                    string[] parsedString = tag.Split('_');
+                    armorLoss = float.Parse(parsedString[1]);
+                }
+            }
+
+            if (armorLoss != 1 && !mechDef.MechTags.Contains("XLRP_Armor_Repairing"))
+                mechDef.MechTags.Add("XLRP_Armor_Repairing");
+
+            int brokenArmor = (int)((1 - armorLoss) * mechDef.MechDefAssignedArmor);
+            int frontArmor = (int)(mechDef.MechDefAssignedArmor - mechDef.CenterTorso.AssignedRearArmor -
+                mechDef.LeftTorso.AssignedRearArmor - mechDef.RightTorso.AssignedRearArmor);
+            int rearArmor = (int)(mechDef.CenterTorso.AssignedRearArmor +
+                mechDef.LeftTorso.AssignedRearArmor + mechDef.RightTorso.AssignedRearArmor);
+            var foo = sim.GetWorkOrderEntryForMech(mechDef);
+            WorkOrderEntry_ModifyMechArmor subEntry = sim.CreateMechArmorModifyWorkOrder(mechDef.GUID,
+                ChassisLocations.All, brokenArmor, frontArmor, rearArmor);
+            return subEntry;
+        }
+
         [HarmonyPatch(typeof(Team), "CollectUnitBaseline")]
         public static class Team_CollectUnitBaseline_Patch
         {
             public static void Postfix(Team __instance)
             {
                 if (__instance.IsLocalPlayer)
-                { 
+                {
+                    Core.tempMechLabQueue.Clear();
+                    Core.CombatMechs.Clear();
+
                     foreach (var actor in __instance.units)
                     {
                         if (!(actor is Mech mech))
