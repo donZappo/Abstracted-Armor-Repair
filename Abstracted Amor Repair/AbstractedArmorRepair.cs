@@ -591,23 +591,27 @@ namespace AbstractedArmorRepair
             return subEntry;
         }
 
-        [HarmonyPatch(typeof(Team), "CollectUnitBaseline")]
-        public static class Team_CollectUnitBaseline_Patch
+        [HarmonyPatch(typeof(TurnDirector), "StartFirstRound")]
+        public static class TurnDirector_StarFirstRound_Patch
         {
-            public static void Postfix(Team __instance)
+            public static void Postfix(TurnDirector __instance)
             {
-                if (__instance.IsLocalPlayer)
+                foreach (var team in __instance.Combat.Teams)
                 {
+                    if (!team.IsLocalPlayer)
+                        return;
+
+
                     Core.tempMechLabQueue.Clear();
                     Core.CombatMechs.Clear();
 
-                    foreach (var actor in __instance.units)
+                    foreach (var actor in team.units)
                     {
                         if (!(actor is Mech mech))
                             continue;
 
                         bool correctArmor = false;
-                        var tags = actor.GetTags();
+                        var tags = mech.GetTags();
                         float armorLoss = 1;
                         foreach (var tag in tags)
                         {

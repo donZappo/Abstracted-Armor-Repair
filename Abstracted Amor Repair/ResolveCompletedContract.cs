@@ -46,6 +46,9 @@ namespace AbstractedArmorRepair
                     int Counter = Core.tempMechLabQueue.Count;
                     for (int index = 0; index < Counter; index++)
                     {
+                        if (Counter == 0)
+                            break;
+
                         WorkOrderEntry_MechLab order = Core.tempMechLabQueue[index];
 
                         LogDebug("Checking for destroyed components.");
@@ -68,6 +71,9 @@ namespace AbstractedArmorRepair
                     // Calculate summary of total repair costs from the temp work order queue
                     for (int index = 0; index < Core.tempMechLabQueue.Count; index++)
                     {
+                        if (Core.tempMechLabQueue.Count == 0)
+                            break;
+
                         WorkOrderEntry_MechLab order = Core.tempMechLabQueue[index];
                         MechDef mech = __instance.GetMechByID(order.MechID);
                         LogDebug("Adding " + mech.Name + " to RepairCount.");

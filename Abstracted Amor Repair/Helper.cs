@@ -80,6 +80,9 @@ namespace AbstractedArmorRepair
             // Default to not requesting any structure repair
             bool destroyedComponents = false;
 
+            if (mech.Inventory == null)
+                return false;
+
             foreach (MechComponentRef mechComponentRef in mech.Inventory)
             {
                 if (mechComponentRef.DamageLevel == ComponentDamageLevel.Destroyed)
