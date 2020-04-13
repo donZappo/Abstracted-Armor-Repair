@@ -54,7 +54,10 @@ namespace AbstractedArmorRepair
                         LogDebug("Checking for destroyed components.");
                         bool destroyedComponents = false;
                         MechDef mech = __instance.GetMechByID(order.MechID);
-                        destroyedComponents = Helpers.CheckDestroyedComponents(mech);
+                        if (mech != null)
+                            destroyedComponents = Helpers.CheckDestroyedComponents(mech);
+                        else
+                            destroyedComponents = true;
 
                         if (destroyedComponents)
                         {

@@ -31,16 +31,18 @@ namespace AbstractedArmorRepair
                 var sim = UnityGameInstance.BattleTechGame.Simulation;
 
                 UnitResult unitResult = Traverse.Create(__instance).Field("UnitData").GetValue<UnitResult>();
-                float armorDamage = unitResult.mech.MechDefCurrentArmor / unitResult.mech.MechDefAssignedArmor;
+                float currentArmor = unitResult.mech.MechDefCurrentArmor;
+                float assignedArmor = unitResult.mech.MechDefAssignedArmor;
+                float armorDamage = currentArmor / assignedArmor;
                 string armorDamageTag = "XLRPArmor_" + armorDamage.ToString();
-
-                if (!unitResult.mech.MechTags.Contains("XLRP_R&R") && armorDamage < 1)
+                
+                if (!unitResult.mech.MechTags.Contains("XLRP_R&R") && currentArmor < assignedArmor)
                 {
                     unitResult.mech.MechTags.Add("XLRP_R&R");
                     unitResult.mech.MechTags.Add(armorDamageTag);
                     Core.CombatMechs.Add(unitResult.mech);
                 }
-                else if (armorDamage < 1)
+                else if (currentArmor < assignedArmor)
                 {
                     unitResult.mech.MechTags.Where(tag => tag.StartsWith("XLRPArmor")).Do(x => unitResult.mech.MechTags.Remove(x));
                     unitResult.mech.MechTags.Add(armorDamageTag);
