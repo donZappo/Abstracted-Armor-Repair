@@ -44,7 +44,7 @@ namespace AbstractedArmorRepair
                     string finalMessage = String.Empty;
 
                     int Counter = Core.tempMechLabQueue.Count;
-                    for (int index = 0; index < Counter; index++)
+                    for (int index = Counter - 1; index < 0; index--)
                     {
                         if (Counter == 0)
                             break;
@@ -66,8 +66,6 @@ namespace AbstractedArmorRepair
                             Core.tempMechLabQueue.Remove(order);
                             destroyedComponents = false;
                             skipMechCount++;
-                            index++;
-
                         }
                     }
 
