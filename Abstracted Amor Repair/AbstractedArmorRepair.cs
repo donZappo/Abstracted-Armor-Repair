@@ -598,10 +598,14 @@ namespace AbstractedArmorRepair
         {
             public static void Postfix(TurnDirector __instance)
             {
+                Logger.LogDebug("Armor Repair Start First Round Patch");
                 foreach (var team in __instance.Combat.Teams)
                 {
-                    if (!team.IsLocalPlayer)
-                        return;
+                    Logger.LogDebug(team.Name);
+                    Logger.LogDebug(team.IsLocalPlayer.ToString());
+
+                    //if (!team.IsLocalPlayer)
+                    //    return;
 
 
                     Core.tempMechLabQueue.Clear();
@@ -612,11 +616,14 @@ namespace AbstractedArmorRepair
                         if (!(actor is Mech mech))
                             continue;
 
+                        Logger.LogDebug("ARMOR REPAIR: " + actor.DisplayName);
                         bool correctArmor = false;
                         var tags = mech.GetTags();
                         float armorLoss = 1;
+                        Logger.LogDebug("Tags:");
                         foreach (var tag in tags)
                         {
+                            Logger.LogDebug(tag);
                             if (tag.StartsWith($"XLRPArmor"))
                             {
                                 string[] parsedString = tag.Split('_');
@@ -626,6 +633,8 @@ namespace AbstractedArmorRepair
                         }
                         if (correctArmor)
                         {
+                            Logger.LogDebug("Correcting Armor");
+                            Logger.LogDebug("Armor Before: " + actor.CurrentArmor);
                             var HeadArmor = actor.StatCollection.GetValue<float>("Head.Armor");
                             HeadArmor *= armorLoss;
                             actor.StatCollection.Set<float>("Head.Armor", HeadArmor);
@@ -669,6 +678,8 @@ namespace AbstractedArmorRepair
                             var RightTorsoRearArmor = actor.StatCollection.GetValue<float>("RightTorso.RearArmor");
                             RightTorsoRearArmor *= armorLoss;
                             actor.StatCollection.Set<float>("RightTorso.RearArmor", RightTorsoRearArmor);
+
+                            Logger.LogDebug("Armor After: " + actor.CurrentArmor);
                         }
                     }
                 }
