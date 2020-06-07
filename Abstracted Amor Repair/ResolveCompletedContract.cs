@@ -146,7 +146,7 @@ namespace AbstractedArmorRepair
 
                                 // Queue Notification
                                 notificationQueue.QueuePauseNotification(
-                                    "'Mech Repairs Needed",
+                                    "'Mech Armor Repairs Needed",
                                     finalMessage,
                                     __instance.GetCrewPortrait(SimGameCrew.Crew_Yang),
                                     string.Empty,
@@ -182,7 +182,7 @@ namespace AbstractedArmorRepair
 
                                 // Queue up Yang's notification
                                 notificationQueue.QueuePauseNotification(
-                                    "'Mech Repairs Needed",
+                                    "'Mech Armor Repairs Needed",
                                     finalMessage,
                                     __instance.GetCrewPortrait(SimGameCrew.Crew_Yang),
                                     string.Empty,
