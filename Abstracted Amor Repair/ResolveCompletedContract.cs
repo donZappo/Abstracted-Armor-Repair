@@ -22,7 +22,22 @@ namespace AbstractedArmorRepair
             try
             {
                 foreach (var mechDef in Core.CombatMechs)
-                { 
+                {
+                    if (mechDef.MechDefCurrentStructure < mechDef.MechDefMaxStructure)
+                        continue;
+
+                    bool componentDamage = false;
+                    for (int i = 0; i < mechDef.inventory.Length; i++)
+                    {
+                        if (mechDef.inventory[i].DamageLevel == ComponentDamageLevel.Destroyed ||
+                            mechDef.inventory[i].DamageLevel == ComponentDamageLevel.NonFunctional)
+                        {
+                            componentDamage = true;
+                        }
+                    }
+                    if (componentDamage)
+                        continue;
+
                     var tempWO = Helpers.CreateBaseMechLabOrder(__instance, mechDef);
                     tempWO.AddSubEntry(Repair_ReArm.RepairArmorMechDef(mechDef));
                     Core.tempMechLabQueue.Add(tempWO);
@@ -43,31 +58,31 @@ namespace AbstractedArmorRepair
                     string skipMechMessage = String.Empty;
                     string finalMessage = String.Empty;
 
-                    int Counter = Core.tempMechLabQueue.Count;
-                    for (int index = Counter - 1; index < 0; index--)
-                    {
-                        if (Counter == 0)
-                            break;
+                    //int Counter = Core.tempMechLabQueue.Count;
+                    //for (int index = Counter - 1; index < 0; index--)
+                    //{
+                    //    if (Counter == 0)
+                    //        break;
 
-                        WorkOrderEntry_MechLab order = Core.tempMechLabQueue[index];
+                    //    WorkOrderEntry_MechLab order = Core.tempMechLabQueue[index];
 
-                        LogDebug("Checking for destroyed components.");
-                        bool destroyedComponents = false;
-                        MechDef mech = __instance.GetMechByID(order.MechID);
-                        if (mech != null)
-                            destroyedComponents = Helpers.CheckDestroyedComponents(mech);
-                        else
-                            destroyedComponents = true;
+                    //    LogDebug("Checking for destroyed components.");
+                    //    bool destroyedComponents = false;
+                    //    MechDef mech = __instance.GetMechByID(order.MechID);
+                    //    if (mech != null)
+                    //        destroyedComponents = Helpers.CheckDestroyedComponents(mech);
+                    //    else
+                    //        destroyedComponents = true;
 
-                        if (destroyedComponents)
-                        {
-                            // Remove this work order from the temp mech lab queue if the mech has destroyed components and move to next iteration
-                            Logger.LogDebug("Removing " + mech.Name + " order from temp queue due to destroyed components and mod settings.");
-                            Core.tempMechLabQueue.Remove(order);
-                            destroyedComponents = false;
-                            skipMechCount++;
-                        }
-                    }
+                    //    if (destroyedComponents)
+                    //    {
+                    //        // Remove this work order from the temp mech lab queue if the mech has destroyed components and move to next iteration
+                    //        Logger.LogDebug("Removing " + mech.Name + " order from temp queue due to destroyed components and mod settings.");
+                    //        Core.tempMechLabQueue.Remove(order);
+                    //        destroyedComponents = false;
+                    //        skipMechCount++;
+                    //    }
+                    //}
 
                     // Calculate summary of total repair costs from the temp work order queue
                     for (int index = 0; index < Core.tempMechLabQueue.Count; index++)
@@ -103,10 +118,12 @@ namespace AbstractedArmorRepair
                         switch (mechRepairCount)
                         {
                             case 0: { Logger.LogDebug("mechRepairCount was 0."); break; }
-                            case 1: { mechRepairCountDisplayed = "one of our 'Mechs was"; break; }
-                            case 2: { mechRepairCountDisplayed = "a couple of the 'Mechs were"; break; }
-                            case 3: { mechRepairCountDisplayed = "three of our 'Mechs were"; break; }
-                            case 4: { mechRepairCountDisplayed = "our whole lance was"; break; }
+                            case 1: { mechRepairCountDisplayed = "one of our 'Mechs had only its armor"; break; }
+                            case 2: { mechRepairCountDisplayed = "a couple of the 'Mechs had only their armor"; break; }
+                            case 3: { mechRepairCountDisplayed = "three of our 'Mechs had only their armor"; break; }
+                            case 4: { mechRepairCountDisplayed = "an entire lance of ours had only their armor"; break; }
+                            case 5: { mechRepairCountDisplayed = "five of our 'Mechs had only their armor"; break; }
+                            case 6: { mechRepairCountDisplayed = "every 'Mech we dropped with had only their armor"; break; }
                         }
                         // Generate a friendly description of how many mechs were damaged but had components destroyed
                         switch (skipMechCount)
