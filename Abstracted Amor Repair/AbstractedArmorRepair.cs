@@ -112,6 +112,7 @@ namespace AbstractedArmorRepair
                 if (!Core.Settings.RepairRearm)
                     return;
 
+                Logger.LogDebug("OnRevertMech");
                 if (__instance.activeMechDef.MechTags.Contains("XLRP_Armor_Repairing"))
                 {
                     __instance.Modified = true;
@@ -126,6 +127,8 @@ namespace AbstractedArmorRepair
         {
             public static bool Prefix(MechBayPanel __instance, MechBayMechUnitElement mechElement)
             {
+                Logger.LogDebug("We are repairing, yes?");
+                Logger.Log("We are repairing, yes?");
                 if (!Core.Settings.RepairRearm)
                     return true;
 
@@ -254,16 +257,23 @@ namespace AbstractedArmorRepair
                     }
                 }
 
+                foreach (var foo in __instance.pendingWorkOrderEntriesToAdd)
+                {
+                    Logger.LogDebug(foo.ID);
+                }
+                Logger.LogDebug("Armor Repair Section");
                 float armorLoss = 1;
                 bool armorTag = false;
                 foreach (var tag in mechDef.MechTags)
                 {
-                    if (tag.StartsWith($"XLRPArmor"))
+                    Logger.LogDebug(tag);
+                    if (tag.StartsWith("XLRPArmor"))
                     {
                         armorTag = true;
                         string[] parsedString = tag.Split('_');
                         armorLoss = float.Parse(parsedString[1]);
                     }
+                    Logger.LogDebug(armorLoss.ToString());
                 }
                 if (armorTag)
                 {
@@ -274,6 +284,7 @@ namespace AbstractedArmorRepair
                         mechDef.LeftTorso.AssignedRearArmor - mechDef.RightTorso.AssignedRearArmor);
                     int rearArmor = (int)(mechDef.CenterTorso.AssignedRearArmor +
                         mechDef.LeftTorso.AssignedRearArmor + mechDef.RightTorso.AssignedRearArmor);
+                    Logger.LogDebug($"brokenAmor: {brokenArmor}, frontArmor: {frontArmor}, rearArmor: {rearArmor}");
                     WorkOrderEntry_ModifyMechArmor subEntry = sim.CreateMechArmorModifyWorkOrder(__instance.selectedMech.MechDef.GUID,
                         ChassisLocations.All, brokenArmor, frontArmor, rearArmor);
 
@@ -358,6 +369,7 @@ namespace AbstractedArmorRepair
 
                 if (entry.Type == WorkOrderType.MechLabModifyArmor)
                 {
+                    Logger.LogDebug("CompleteWorkOrder");
                     WorkOrderEntry_MechLab workOrderEntry_MechLab = entry as WorkOrderEntry_MechLab;
                     MechDef mechBayID = __instance.GetMechByID(workOrderEntry_MechLab.MechLabParent.MechID);
                     if (mechBayID.MechTags.Contains("XLRP_Armor_Repairing"))
@@ -382,6 +394,7 @@ namespace AbstractedArmorRepair
                 {
                     WorkOrderEntry_MechLab workOrderEntry_MechLab = entry as WorkOrderEntry_MechLab;
                     MechDef mechBayID = __instance.GetMechByID(workOrderEntry_MechLab.MechID);
+                    Logger.LogDebug("CancelWorkOrder");
                     if (mechBayID.MechTags.Contains("XLRP_Armor_Repairing"))
                         mechBayID.MechTags.Remove("XLRP_Armor_Repairing");
                 }
@@ -396,8 +409,9 @@ namespace AbstractedArmorRepair
                 if (!Core.Settings.RepairRearm)
                     return;
 
-                if (__instance.selectedMech.MechDef.MechTags.Contains("XLRP_Armor_Repairing"))
-                    __instance.selectedMech.MechDef.MechTags.Remove("XLRP_Armor_Repairing");
+                //Logger.LogDebug("OnRepairAllCancelled");
+                //if (__instance.selectedMech.MechDef.MechTags.Contains("XLRP_Armor_Repairing"))
+                //    __instance.selectedMech.MechDef.MechTags.Remove("XLRP_Armor_Repairing");
             }
         }
 
@@ -409,6 +423,7 @@ namespace AbstractedArmorRepair
                 if (!Core.Settings.RepairRearm)
                     return;
 
+                Logger.LogDebug("ConfirmRevertMech");
                 if (__instance.activeMechDef.MechTags.Contains("XLRP_Armor_Repairing"))
                     __instance.activeMechDef.MechTags.Remove("XLRP_Armor_Repairing");
             }
