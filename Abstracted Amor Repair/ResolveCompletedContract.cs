@@ -51,6 +51,7 @@ namespace AbstractedArmorRepair
 
                     int cbills = 0;
                     int techCost = 0;
+                    int repairDays = 0;
                     int mechRepairCount = 0;
                     int skipMechCount = 0;
                     string mechRepairCountDisplayed = String.Empty;
@@ -94,26 +95,29 @@ namespace AbstractedArmorRepair
                         MechDef mech = __instance.GetMechByID(order.MechID);
                         LogDebug("Adding " + mech.Name + " to RepairCount.");
                         cbills += order.GetCBillCost();
-                        techCost += order.GetCost();
+                        //techCost += order.GetCost();
+                        techCost = order.GetCost();
+                        if (__instance.MechTechSkill > 0)
+                        {
+                            repairDays += Mathf.CeilToInt((float)techCost / (float)__instance.MechTechSkill);
+                        }
+                        else
+                        {
+                            repairDays += 1; // Safety in case of weird div/0
+                        }
                         mechRepairCount++;
                     }
+                    // now bring down the number of repair days, considering number of bays (assumes RepairBays mod is installed!)
+                    // this is still a flawed calculuation (fails to consider that bays 2, 3 may have a lower work rate, depending on tech)
+                    // but it at least doesn't underestimate it by quite as much!
+                    int numMechBayPods = __instance.CompanyStats.GetValue<int>(__instance.Constants.Story.MechBayPodsID);
+                    repairDays = Mathf.CeilToInt(repairDays / (float)numMechBayPods);
 
                     mechRepairCount = Mathf.Clamp(mechRepairCount, 0, 6);
 
                     // If Yang's Auto Repair prompt is enabled, build a message prompt dialog for the player
                     if (true)
                     {
-
-                        // Calculate a friendly techCost of the work order in days, based on number of current mechtechs in the player's game.
-                        if (techCost != 0 && __instance.MechTechSkill != 0)
-                        {
-                            techCost = Mathf.CeilToInt((float)techCost / (float)__instance.MechTechSkill);
-                        }
-                        else
-                        {
-                            techCost = 1; // Safety in case of weird div/0
-                        }
-
                         // Generate a quick friendly description of how many mechs were damaged in battle
                         switch (mechRepairCount)
                         {
@@ -186,7 +190,7 @@ namespace AbstractedArmorRepair
                                         "Boss, {0} damaged. It'll cost <color=#DE6729>{1}{2:n0}</color> and {3} days for these repairs. Want my crew to get started?\n\nAlso, {4}\n\n",
                                         mechRepairCountDisplayed,
                                         '¢', cbills.ToString(),
-                                        techCost.ToString(),
+                                        repairDays.ToString(),
                                         skipMechMessage
                                     );
                                 }
@@ -196,7 +200,7 @@ namespace AbstractedArmorRepair
                                         "Boss, {0} damaged on the last engagement. It'll cost <color=#DE6729>{1}{2:n0}</color> and {3} days for the repairs.\n\nWant my crew to get started?",
                                         mechRepairCountDisplayed,
                                         '¢', cbills.ToString(),
-                                        techCost.ToString()
+                                        repairDays.ToString()
                                     );
                                 }
 
