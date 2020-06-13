@@ -124,6 +124,7 @@ namespace AbstractedArmorRepair
                             case 4: { mechRepairCountDisplayed = "an entire lance of ours had only their armor"; break; }
                             case 5: { mechRepairCountDisplayed = "five of our 'Mechs had only their armor"; break; }
                             case 6: { mechRepairCountDisplayed = "every 'Mech we dropped with had only their armor"; break; }
+                            default: { mechRepairCountDisplayed = "more than six 'Mechs had only their armor"; break; }
                         }
                         // Generate a friendly description of how many mechs were damaged but had components destroyed
                         switch (skipMechCount)
@@ -131,8 +132,11 @@ namespace AbstractedArmorRepair
                             case 0: { Logger.LogDebug("skipMechCount was 0."); break; }
                             case 1: { skipMechCountDisplayed = "one of the 'Mechs is damaged but has"; break; }
                             case 2: { skipMechCountDisplayed = "two of the 'Mechs are damaged but have"; break; }
-                            case 3: { skipMechCountDisplayed = "three of the 'Mechs are damaged but have "; break; }
+                            case 3: { skipMechCountDisplayed = "three of the 'Mechs are damaged but have"; break; }
                             case 4: { skipMechCountDisplayed = "the whole lance is damaged but has"; break; }
+                            case 5: { skipMechCountDisplayed = "five of our 'Mechs are damaged but have"; break; }
+                            case 6: { skipMechCountDisplayed = "every 'Mech we dropped with is damaged but has"; break; }
+                            default: { skipMechCountDisplayed = "more than six 'Mechs are damaged but have"; break; }
                         }
 
                         // Check if there are any mechs to process
